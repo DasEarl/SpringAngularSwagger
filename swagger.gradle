@@ -1,0 +1,106 @@
+def swaggerBuildDir = "${project.buildDir.path}/swagger"
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath('io.swagger:swagger-codegen:2.2.3')
+    }
+}
+
+configurations {
+    swagger
+}
+
+sourceSets {
+    swagger {
+        java {
+            srcDir file(swaggerBuildDir + "/src/main/java")
+        }
+    }
+}
+
+dependencies {
+    swagger 'io.swagger:swagger-codegen-cli:2.3.1'
+    compile sourceSets.swagger.output
+}
+
+task swaggerCodegenYaml(group: "Swagger") {
+    doLast {
+        javaexec {
+            main = "-jar";
+            args = [
+                    configurations.swagger.files[0],
+                    "generate",
+                    "-i", "http://localhost:8080/v2/api-docs",
+                    "-l", "swagger-yaml",
+                    "-o", "src/main/resources/swagger",
+            ]
+        }
+    }
+}
+
+task swaggerCodegenJava(group: "Swagger") {
+    doLast {
+        javaexec {
+            main = "-jar";
+            args = [
+                    configurations.swagger.files[0],
+                    "generate",
+                    "-i", "src/main/resources/swagger/swagger.yaml",
+                    "-l", "java",
+                    "-o", swaggerBuildDir,
+            ]
+        }
+    }
+}
+
+task swaggerCodegenAngular(group: "Swagger") {
+    doLast {
+        javaexec {
+            main = "-jar";
+            args = [
+                    configurations.swagger.files[0],
+                    "generate",
+                     "-i", "src/main/resources/swagger/swagger.yaml",
+                    "-l", "typescript-angular",
+                    "-o", "src/main/webapp/src/swagger",
+            ]
+        }
+    }
+}
+
+swaggerCodegenAngular.doFirst {
+    delete("src/main/webapp/src/swagger")
+}
+
+task swaggerCodegenHtml(group: "Swagger") {
+    doLast {
+        javaexec {
+            main = "-jar";
+            args = [
+                    configurations.swagger.files[0],
+                    "generate",
+                     "-i", "src/main/resources/swagger/swagger.yaml",
+                    "-l", "html2",
+                    "-o", swaggerBuildDir + "/html",
+            ]
+        }
+    }
+}
+
+task swaggerCodegenBash(group: "Swagger") {
+    doLast {
+        javaexec {
+            main = "-jar";
+            args = [
+                    configurations.swagger.files[0],
+                    "generate",
+                     "-i", "src/main/resources/swagger/swagger.yaml",
+                    "-l", "bash",
+                    "-o", swaggerBuildDir + "/bash",
+            ]
+        }
+    }
+}

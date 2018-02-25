@@ -1,0 +1,35 @@
+def webappDir = "$projectDir/src/main/webapp"
+
+def isWindows() {
+    return org.gradle.internal.os.OperatingSystem.current().isWindows();
+}
+
+task installAngular(type: Exec, group: "FrontEnd") {
+    workingDir "$webappDir"
+    inputs.dir "$webappDir"
+    if (isWindows()) {
+        commandLine "npm.cmd", "install"
+    } else {
+        commandLine "npm", "install"
+    }
+}
+
+task buildFrontend(type: Exec, group: "FrontEnd") {
+    workingDir "$webappDir"
+    inputs.dir "$webappDir"
+    if (isWindows()) {
+        commandLine "ng.cmd", "build"
+    } else {
+        commandLine "ng", "build"
+    }
+}
+
+task serveFrontend(type: Exec, group: "FrontEnd") {
+    workingDir "$webappDir"
+    inputs.dir "$webappDir"
+    if (isWindows()) {
+        commandLine "ng.cmd", "serve"
+    } else {
+        commandLine "ng", "serve"
+    }
+}
